@@ -38,22 +38,51 @@
         .prefecture:hover {
             fill: #cccccc !important;
         }
-
-        /* クリックされてアクティブになった時の色 */
-        .prefecture.active {
-            fill: #ff5555 !important; /* ここで好きな色（赤）に変更 */
-        }
         
         /* 境界線などはクリックに反応させない */
         .boundary-line {
             pointer-events: none;
+        }
+
+        /* パレットのスタイル */
+        #palette {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .color-btn {
+            width: 50px;
+            height: 50px;
+            margin: 0 5px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .color-btn:hover {
+            border-color: #000;
+        }
+
+        .color-btn.selected {
+            border-color: #000;
+            box-shadow: 0 0 5px rgba(0,0,0,0.5);
         }
     </style>
 </head>
 <body>
 
     <h1>都道府県 クリックマップ</h1>
-    <p>都道府県をクリックすると色が変わり、もう一度クリックすると元に戻ります。</p>
+    <p>色を選択してから都道府県をクリックするとその色で塗られます。もう一度クリックすると元に戻ります。</p>
+
+    <div id="palette">
+        <button class="color-btn" data-color="#ff5555">赤</button>
+        <button class="color-btn" data-color="#5555ff">青</button>
+        <button class="color-btn" data-color="#55ff55">緑</button>
+        <button class="color-btn" data-color="#ffff55">黄</button>
+        <button class="color-btn" data-color="#ff55ff">紫</button>
+        <button class="color-btn" data-color="#55ffff">水色</button>
+    </div>
 
     <div class="map-container">
         <svg class="geolonia-svg-map" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
@@ -270,15 +299,42 @@
     <script>
         // DOMが読み込まれたら実行
         document.addEventListener('DOMContentLoaded', function() {
+            let currentColor = '#ff5555'; // デフォルト色
+
+            // パレットのボタンを取得
+            const colorBtns = document.querySelectorAll('.color-btn');
+
+            // 各色ボタンにクリックイベントを設定
+            colorBtns.forEach(function(btn) {
+                btn.style.backgroundColor = btn.dataset.color;
+                btn.addEventListener('click', function() {
+                    // 選択された色をcurrentColorに設定
+                    currentColor = this.dataset.color;
+                    // 他のボタンの選択状態を解除
+                    colorBtns.forEach(b => b.classList.remove('selected'));
+                    // このボタンを選択状態に
+                    this.classList.add('selected');
+                });
+            });
+
+            // デフォルトで最初のボタンを選択
+            colorBtns[0].classList.add('selected');
+
             // "prefecture" クラスを持つ全ての要素（各都道府県のグループ）を取得
             const prefectures = document.querySelectorAll('.prefecture');
 
             // 取得した要素それぞれにクリックイベントを設定
             prefectures.forEach(function(prefecture) {
                 prefecture.addEventListener('click', function() {
-                    // クリックされた要素のクラスに "active" を付け外し（トグル）する
-                    // "active" クラスが付くと、CSSで色が赤になる
-                    this.classList.toggle('active');
+                    // 現在のfillを取得
+                    const currentFill = this.getAttribute('fill');
+                    if (currentFill === '#EEEEEE' || !currentFill) {
+                        // 元の色なら選択色に変更
+                        this.setAttribute('fill', currentColor);
+                    } else {
+                        // 塗られているなら元に戻す
+                        this.setAttribute('fill', '#EEEEEE');
+                    }
                 });
             });
         });
