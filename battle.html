@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>県バトルシーン</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(to bottom, #87CEEB, #98FB98);
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        h1 {
+            color: #333;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .battlefield {
+            position: relative;
+            width: 100%;
+            max-width: 1200px;
+            height: 600px;
+            background: linear-gradient(to bottom, #4CAF50, #8BC34A);
+            border: 2px solid #2E7D32;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            perspective: 1000px;
+        }
+
+        .base {
+            position: absolute;
+            bottom: 50px;
+            width: 100px;
+            height: 100px;
+            background: #795548;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .base.left {
+            left: 50px;
+        }
+
+        .base.right {
+            right: 50px;
+        }
+
+        .unit {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-bottom: 25px solid;
+            bottom: 100px;
+            animation: attack 4s ease-in-out infinite;
+        }
+
+        .unit.left {
+            border-bottom-color: #FF5722;
+            left: 200px;
+        }
+
+        .unit.right {
+            border-bottom-color: #2196F3;
+            right: 200px;
+            transform: rotate(180deg);
+            animation: attack-right 4s ease-in-out infinite;
+        }
+
+        .unit:nth-child(1) { animation-delay: 0s; }
+        .unit:nth-child(2) { animation-delay: 0.5s; }
+        .unit:nth-child(3) { animation-delay: 1s; }
+        .unit:nth-child(4) { animation-delay: 1.5s; }
+        .unit:nth-child(5) { animation-delay: 2s; }
+        .unit:nth-child(6) { animation-delay: 0s; }
+        .unit:nth-child(7) { animation-delay: 0.5s; }
+        .unit:nth-child(8) { animation-delay: 1s; }
+        .unit:nth-child(9) { animation-delay: 1.5s; }
+        .unit:nth-child(10) { animation-delay: 2s; }
+
+        @keyframes attack {
+            0% { left: 200px; }
+            50% { left: 550px; }
+            100% { left: 200px; }
+        }
+
+        @keyframes attack-right {
+            0% { right: 200px; }
+            50% { right: 550px; }
+            100% { right: 200px; }
+        }
+
+        .battle-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            color: #FF0000;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+            animation: flash 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes flash {
+            0% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+
+        .county-name {
+            position: absolute;
+            bottom: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+        }
+
+        .base.left .county-name {
+            left: 50px;
+        }
+
+        .base.right .county-name {
+            right: 50px;
+        }
+    </style>
+</head>
+<body>
+    <h1>県バトルシーン</h1>
+    <div class="battlefield">
+        <div class="base left">
+            <div id="left-county">県A</div>
+        </div>
+        <div class="base right">
+            <div id="right-county">県B</div>
+        </div>
+        <!-- 左側のユニット（5個） -->
+        <div class="unit left"></div>
+        <div class="unit left"></div>
+        <div class="unit left"></div>
+        <div class="unit left"></div>
+        <div class="unit left"></div>
+        <!-- 右側のユニット（5個） -->
+        <div class="unit right"></div>
+        <div class="unit right"></div>
+        <div class="unit right"></div>
+        <div class="unit right"></div>
+        <div class="unit right"></div>
+        <div class="battle-text">合戦中！</div>
+    </div>
+
+    <script>
+        // URLパラメータから県名を取得
+        const urlParams = new URLSearchParams(window.location.search);
+        const leftCounty = urlParams.get('left') || '県A';
+        const rightCounty = urlParams.get('right') || '県B';
+
+        document.getElementById('left-county').textContent = leftCounty;
+        document.getElementById('right-county').textContent = rightCounty;
+
+        // 兵士のアニメーションを動的に調整
+        const soldiers = document.querySelectorAll('.soldier');
+        soldiers.forEach(soldier => {
+            soldier.style.animationPlayState = 'running';
+        });
+    </script>
+</body>
+</html>
