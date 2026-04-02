@@ -68,6 +68,22 @@
             border-color: #000;
             box-shadow: 0 0 5px rgba(0,0,0,0.5);
         }
+
+        /* リセットボタンのスタイル */
+        #reset-btn {
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background-color: #ccc;
+            border: 2px solid #999;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.2s;
+        }
+
+        #reset-btn:hover {
+            background-color: #aaa;
+        }
     </style>
 </head>
 <body>
@@ -83,6 +99,8 @@
         <button class="color-btn" data-color="#ff55ff">紫</button>
         <button class="color-btn" data-color="#55ffff">水色</button>
     </div>
+
+    <button id="reset-btn">リセット</button>
 
     <div class="map-container">
         <svg class="geolonia-svg-map" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
@@ -300,6 +318,18 @@
         // DOMが読み込まれたら実行
         document.addEventListener('DOMContentLoaded', function() {
             let currentColor = '#ff5555'; // デフォルト色
+            const storageKey = 'paintedPrefectures'; // localStorageのキー
+
+            // localStorageから保存されたデータを読み込む関数
+            function loadPaintedPrefectures() {
+                const saved = localStorage.getItem(storageKey);
+                return saved ? JSON.parse(saved) : {}; // 保存データがない場合は空オブジェクト
+            }
+
+            // localStorageにデータを保存する関数
+            function savePaintedPrefectures(data) {
+                localStorage.setItem(storageKey, JSON.stringify(data));
+            }
 
             // パレットのボタンを取得
             const colorBtns = document.querySelectorAll('.color-btn');
@@ -320,22 +350,49 @@
             // デフォルトで最初のボタンを選択
             colorBtns[0].classList.add('selected');
 
+            // 保存されたデータを読み込み
+            const paintedData = loadPaintedPrefectures();
+
             // "prefecture" クラスを持つ全ての要素（各都道府県のグループ）を取得
             const prefectures = document.querySelectorAll('.prefecture');
 
             // 取得した要素それぞれにクリックイベントを設定
             prefectures.forEach(function(prefecture) {
+                const code = prefecture.getAttribute('data-code');
+                
+                // 保存された色があれば適用
+                if (paintedData[code]) {
+                    prefecture.setAttribute('fill', paintedData[code]);
+                }
+
                 prefecture.addEventListener('click', function() {
                     // 現在のfillを取得
                     const currentFill = this.getAttribute('fill');
                     if (currentFill === '#EEEEEE' || !currentFill) {
                         // 元の色なら選択色に変更
                         this.setAttribute('fill', currentColor);
+                        paintedData[code] = currentColor; // 保存データに追加
                     } else {
                         // 塗られているなら元に戻す
                         this.setAttribute('fill', '#EEEEEE');
+                        delete paintedData[code]; // 保存データから削除
                     }
+                    // localStorageを更新
+                    savePaintedPrefectures(paintedData);
                 });
+            });
+
+            // リセットボタンのイベント
+            const resetBtn = document.getElementById('reset-btn');
+            resetBtn.addEventListener('click', function() {
+                // 全ての都道府県を元の色に戻す
+                prefectures.forEach(function(prefecture) {
+                    prefecture.setAttribute('fill', '#EEEEEE');
+                });
+                // localStorageをクリア
+                localStorage.removeItem(storageKey);
+                // メモリ上のデータもクリア
+                Object.keys(paintedData).forEach(key => delete paintedData[key]);
             });
         });
     </script>
