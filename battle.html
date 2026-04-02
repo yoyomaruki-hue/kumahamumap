@@ -39,8 +39,8 @@
             bottom: 50px;
             width: 100px;
             height: 100px;
-            background: #795548;
-            border-radius: 50%;
+            background: url('image/shiro.png') no-repeat center center;
+            background-size: cover;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -59,24 +59,23 @@
 
         .unit {
             position: absolute;
-            width: 0;
-            height: 0;
-            border-left: 15px solid transparent;
-            border-right: 15px solid transparent;
-            border-bottom: 25px solid;
+            width: 30px;
+            height: 30px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
             bottom: 100px;
             animation: attack 4s ease-in-out infinite;
         }
 
         .unit.left {
-            border-bottom-color: #FF5722;
+            background-image: url('image/unit1.png');
             left: 200px;
         }
 
         .unit.right {
-            border-bottom-color: #2196F3;
+            background-image: url('image/unit2.png');
             right: 200px;
-            transform: rotate(180deg);
             animation: attack-right 4s ease-in-out infinite;
         }
 
